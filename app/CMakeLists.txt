@@ -9,6 +9,8 @@ add_executable(${PROJECT_NAME} ${sources} ${headers}
         src/MyApp.cpp
         include/MyApp.hpp
         src/MainController.cpp
+        include/MainController.hpp
+        src/MainController.cpp
         include/MainController.hpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE matf-rg-engine)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
