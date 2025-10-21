@@ -2,7 +2,7 @@
 // Created by nikolina on 20.10.25..
 //
 
-#include "../include/MyApp.hpp"
+#include "MyApp.hpp"
 
 #include <MainController.hpp>
 #include <spdlog/spdlog.h>
