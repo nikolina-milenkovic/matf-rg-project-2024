@@ -43,11 +43,11 @@ bool MainController::loop() {
 
 void MainController::begin_draw() { engine::graphics::OpenGL::clear_buffers(); }
 
-void MainController::draw_backpack() {
+void MainController::draw_plane() {
     //Model
     auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
     auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
-    engine::resources::Model *backpack = resources->model("backpack");
+    engine::resources::Model *backpack = resources->model("plane");
 
     //Shader
     engine::resources::Shader *shader = resources->shader("basic");
@@ -56,10 +56,38 @@ void MainController::draw_backpack() {
     shader->set_mat4("projection", graphics->projection_matrix());
     shader->set_mat4("view", graphics->camera()->view_matrix());
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));
-    model = glm::scale(model, glm::vec3(0.3f));
+    model = glm::translate(model, glm::vec3(0.0f, 3.0f, -10.0f));
+    model = glm::scale(model, glm::vec3(0.03f));
     shader->set_mat4("model", model);
     backpack->draw(shader);
+
+}
+
+void MainController::draw_boat() {
+    //Model
+    auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
+    auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
+    engine::resources::Model *backpack = resources->model("boat");
+
+    //Shader
+    engine::resources::Shader *shader = resources->shader("basic");
+
+    shader->use();
+    shader->set_mat4("projection", graphics->projection_matrix());
+    shader->set_mat4("view", graphics->camera()->view_matrix());
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, -8.0f, -20.0f));
+    model = glm::scale(model, glm::vec3(0.003f));
+    shader->set_mat4("model", model);
+    backpack->draw(shader);
+}
+
+void MainController::draw_skybox() {
+    auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
+    auto skybox = resources->skybox("exosystem");
+    auto shader = resources->shader("skybox");
+    auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
+    graphics->draw_skybox(shader, skybox);
 }
 
 void MainController::update_camera() {
@@ -80,7 +108,11 @@ void MainController::update_camera() {
 
 void MainController::update() { update_camera(); }
 
-void MainController::draw() { draw_backpack(); }
+void MainController::draw() {
+    draw_boat();
+    draw_plane();
+    draw_skybox();
+}
 
 void MainController::end_draw() {
     auto platform = engine::core::Controller::get<engine::platform::PlatformController>();

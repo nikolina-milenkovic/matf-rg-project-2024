@@ -16,9 +16,13 @@ class MainController : public engine::core::Controller{
 
     void update() override;
 
-    void draw_backpack();
+    void draw_boat();
+
+    void draw_plane();
 
     void begin_draw() override;
+
+    void draw_skybox();
 
     void draw() override;
 
