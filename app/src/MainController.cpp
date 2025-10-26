@@ -45,6 +45,7 @@ void MainController::begin_draw() { engine::graphics::OpenGL::clear_buffers(); }
 
 void MainController::draw_plane() {
     //Model
+    if(!plane_active) return;
     auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
     auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
     engine::resources::Model *backpack = resources->model("plane");
@@ -56,7 +57,7 @@ void MainController::draw_plane() {
     shader->set_mat4("projection", graphics->projection_matrix());
     shader->set_mat4("view", graphics->camera()->view_matrix());
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 3.0f, -10.0f));
+    model = glm::translate(model, plane_pos);
     model = glm::scale(model, glm::vec3(0.03f));
     shader->set_mat4("model", model);
     backpack->draw(shader);
@@ -105,8 +106,29 @@ void MainController::update_camera() {
     if (platform->key(engine::platform::KeyId::KEY_A).is_down()) { camera->move_camera(engine::graphics::Camera::Movement::LEFT, dt); }
     if (platform->key(engine::platform::KeyId::KEY_D).is_down()) { camera->move_camera(engine::graphics::Camera::Movement::RIGHT, dt); }
 }
+void MainController::update_plane() {
+    auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
 
-void MainController::update() { update_camera(); }
+    if ((platform->key(engine::platform::KeyId::KEY_P).state() == engine::platform::Key::State::JustPressed) && !plane_active) {
+        plane_active = true;
+        plane_pos = plane_start;
+    }
+
+    if (plane_active) {
+        float speed = 5.0f;
+        float dt = platform->dt();
+
+        plane_pos.z += speed * dt;
+
+        if (plane_pos.z >= 2) {
+            plane_active = false;
+        }
+    }
+}
+void MainController::update() {
+    update_plane();
+    update_camera();
+}
 
 void MainController::draw() {
     draw_boat();

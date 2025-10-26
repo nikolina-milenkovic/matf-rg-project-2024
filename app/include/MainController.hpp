@@ -5,12 +5,16 @@
 #ifndef MAINCONTROLLER_HPP
 #define MAINCONTROLLER_HPP
 #include <engine/core/Controller.hpp>
+#include<glm/glm.hpp>
+
 namespace app {
 
 class MainController : public engine::core::Controller{
     void initialize() override;
 
     bool loop() override;
+
+    void update_plane();
 
     void update_camera();
 
@@ -33,6 +37,10 @@ public:
     std::string_view name() const override {
         return "app::MainController";
     }
+
+    bool plane_active = false;
+    glm::vec3 plane_start = glm::vec3(0.0f, 2.0f, -40.0f);
+    glm::vec3 plane_pos = plane_start;
 };
 
 } // app
