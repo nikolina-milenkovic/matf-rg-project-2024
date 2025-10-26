@@ -48,7 +48,7 @@ void MainController::draw_plane() {
     if(!plane_active) return;
     auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
     auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
-    engine::resources::Model *backpack = resources->model("plane");
+    engine::resources::Model *plane = resources->model("plane");
 
     //Shader
     engine::resources::Shader *shader = resources->shader("basic");
@@ -60,7 +60,7 @@ void MainController::draw_plane() {
     model = glm::translate(model, plane_pos);
     model = glm::scale(model, glm::vec3(0.03f));
     shader->set_mat4("model", model);
-    backpack->draw(shader);
+    plane->draw(shader);
 
 }
 
@@ -68,7 +68,7 @@ void MainController::draw_boat() {
     //Model
     auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
     auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
-    engine::resources::Model *backpack = resources->model("boat");
+    engine::resources::Model *boat = resources->model("boat");
 
     //Shader
     engine::resources::Shader *shader = resources->shader("basic");
@@ -76,11 +76,15 @@ void MainController::draw_boat() {
     shader->use();
     shader->set_mat4("projection", graphics->projection_matrix());
     shader->set_mat4("view", graphics->camera()->view_matrix());
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, -4.0f, -15.0f));
-    model = glm::scale(model, glm::vec3(0.002f));
-    shader->set_mat4("model", model);
-    backpack->draw(shader);
+
+    for (int i = 0; i < 5; i++) {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(i * 2.0f - 4.0f, -5.0f - pow(-1,i), -15.0f + pow(-1, i)));
+        model = glm::scale(model, glm::vec3(0.002f + (0.0003 * pow(-1, i))));
+        shader->set_mat4("model", model);
+        boat->draw(shader);
+    }
+
 }
 
 void MainController::draw_skybox() {
@@ -101,10 +105,8 @@ void MainController::update_camera() {
     auto camera = graphics->camera();
 
     float dt = platform->dt();
-    if (platform->key(engine::platform::KeyId::KEY_W).is_down()) { camera->move_camera(engine::graphics::Camera::Movement::FORWARD, dt); }
-    if (platform->key(engine::platform::KeyId::KEY_S).is_down()) { camera->move_camera(engine::graphics::Camera::Movement::BACKWARD, dt); }
-    if (platform->key(engine::platform::KeyId::KEY_A).is_down()) { camera->move_camera(engine::graphics::Camera::Movement::LEFT, dt); }
-    if (platform->key(engine::platform::KeyId::KEY_D).is_down()) { camera->move_camera(engine::graphics::Camera::Movement::RIGHT, dt); }
+    if (platform->key(engine::platform::KeyId::KEY_LEFT).is_down()) { camera->move_camera(engine::graphics::Camera::Movement::RIGHT, dt); }
+    if (platform->key(engine::platform::KeyId::KEY_RIGHT).is_down()) { camera->move_camera(engine::graphics::Camera::Movement::LEFT, dt); }
 }
 void MainController::update_plane() {
     auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
@@ -136,6 +138,25 @@ void MainController::draw() {
     shader->use();
 
     shader->set_vec3("dirLightDir",glm::vec3(-2.0f, -7.0f, -2.0f) );
+
+    auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
+    auto camera = graphics->camera();
+
+    glm::vec3 camPos = camera->Position;
+    glm::vec3 camDir = camera->Front;
+
+    shader->set_vec3("spotLight.position", camPos);
+    shader->set_vec3("spotLight.direction", camDir);
+    shader->set_float("spotLight.cutOff", glm::cos(glm::radians(12.5f)));     // unutrašnji ugao
+    shader->set_float("spotLight.outerCutOff", glm::cos(glm::radians(17.5f))); // spoljašnji prsten
+
+    shader->set_vec3("spotLight.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+    shader->set_vec3("spotLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+    shader->set_vec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    shader->set_float("spotLight.constant", 1.0f);
+    shader->set_float("spotLight.linear", 0.09f);
+    shader->set_float("spotLight.quadratic", 0.332f);
 
 
     draw_boat();

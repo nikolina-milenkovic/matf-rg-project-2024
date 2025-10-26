@@ -41,6 +41,7 @@ public:
     bool plane_active = false;
     glm::vec3 plane_start = glm::vec3(0.0f, 2.0f, -40.0f);
     glm::vec3 plane_pos = plane_start;
+
 };
 
 } // app
