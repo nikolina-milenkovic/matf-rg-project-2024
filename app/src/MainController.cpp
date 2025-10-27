@@ -79,7 +79,7 @@ void MainController::draw_boat() {
 
     for (int i = 0; i < 5; i++) {
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(i * 2.0f - 4.0f, -5.0f - pow(-1,i), -15.0f + pow(-1, i)));
+        model = glm::translate(model, glm::vec3(i * 2.0f - 7.0f, -4.0f - pow(-1,i), -15.0f + pow(-1, i)));
         model = glm::scale(model, glm::vec3(0.002f + (0.0003 * pow(-1, i))));
         shader->set_mat4("model", model);
         boat->draw(shader);
@@ -141,7 +141,7 @@ void MainController::update_plane() {
 
         plane_pos.z += speed * dt;
 
-        if (plane_pos.z >= 2) {
+        if (plane_pos.z >= 80.0f) {
             plane_active = false;
         }
     }
@@ -151,7 +151,7 @@ void MainController::update_spotlight() {
     auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
     float dt = platform->dt();
 
-    if (platform->key(engine::platform::KeyId::KEY_S).state() == engine::platform::Key::State::JustPressed) {
+    if (platform->key(engine::platform::KeyId::KEY_S).state() == engine::platform::Key::State::JustPressed || platform->key(engine::platform::KeyId::KEY_RIGHT).state() == engine::platform::Key::State::JustPressed) {
         spotlight_active = true;
         spotlight_timer = 0.0f;
     }
@@ -171,9 +171,6 @@ void MainController::update() {
     update_spotlight();
 }
 
-
-
-
 void MainController::draw() {
     auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
     auto shader = resources->shader("basic");
@@ -181,7 +178,7 @@ void MainController::draw() {
 
     shader->set_vec3("dirLightDir",glm::vec3(-2.0f, -7.0f, -2.0f) );
     shader->set_vec3("dirLightAmbient",  glm::vec3(0.3f, 0.3f, 0.33f));
-    shader->set_vec3("dirLightDiffuse",  glm::vec3(0.6f, 0.6f, 0.7f));
+    shader->set_vec3("dirLightDiffuse",  glm::vec3(0.8f, 0.8f, 0.9f));
     shader->set_vec3("dirLightSpecular", glm::vec3(0.5f, 0.5f, 0.6f));
 
     glm::vec3 heliPos = glm::vec3(-6.0f, 0.0f, -15.0f);
@@ -201,7 +198,7 @@ void MainController::draw() {
 
     if(spotlight_active) {
         shader->set_vec3("spotLight.ambient", glm::vec3(0.1f * flicker, 0.0f, 0.0f));
-        shader->set_vec3("spotLight.diffuse", glm::vec3(0.8f * flicker, 0.0f, 0.0f));
+        shader->set_vec3("spotLight.diffuse", glm::vec3(1.0f * flicker, 0.0f, 0.0f));
         shader->set_vec3("spotLight.specular", glm::vec3(1.0f * flicker, 0.0f, 0.0f));
 
     }

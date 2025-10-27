@@ -1,22 +1,28 @@
 # {NAME-OF-THE-PROJECT}
 
-{INDEX} - {STUDENT-FULL-NAME}  
-{PROJECT DESCRIPTION}
+mi22117 - Nikolina Milenkovic
+The project shows a riverbed with boats and a helicopter following them. 
+We can enable the helicopter to illuminate the boats with a red spotlight using the keyboard keys. 
+In addition, it is possible to use the keys to start an airplane that flies over the river.
+
+
 
 ## Controls
 
-{BUTTON1} -> {ACTION1}  
-{BUTTON2} -> {ACTION2}  
-...  
-{BUTTONN} -> {ACTIONN}
+P ->  An airplane appears moving along the z axis
+S -> A flashing red spotlight is emitted from the direction of the helicopter
+Q -> The spotlight is going out
+RIGHT -> The boats move to the right, and the helicopter follows them with red spotlight
+ESCAPE -> Close window
+
 
 ## Features
 
 ### Fundamental:
 
-[ ] Model with lighting
-[ ] Two types of lighting with customizable colors and movement through GUI or ACTIONS
-[ ] {ACTION_X} --- AFTER_M_SECONDS---Triggers---> {EVENT_A} ---> AFTER_N_SECONDS---Triggers---> {EVENT_B}
+[+] Model with lighting
+[+] Two types of lighting with customizable colors and movement through GUI or ACTIONS
+[+] {ACTION_X} --- AFTER_M_SECONDS---Triggers---> {EVENT_A} ---> AFTER_N_SECONDS---Triggers---> {EVENT_B}
 
 ### Group A:
 
@@ -37,12 +43,13 @@
 
 ## Models:
 
-[link1]   
-[link2]
+Boat: https://poly.pizza/m/1ZuSXvhkRg_
+Plane: https://poly.pizza/m/a3XrQkLNna9
+Helicopter: https://free3d.com/3d-model/helicopter-810418.html
 
 ## Textures
 
 [link1]  
 [link2]
 
-{OTHER-RESOURCES}
+Skybox: https://opengameart.org/content/xonotic-skyboxes

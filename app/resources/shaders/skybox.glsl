@@ -25,5 +25,5 @@ in vec3 TexCoords;
 uniform samplerCube skybox;
 
 void main() {
-    FragColor = 0.4 * texture(skybox, TexCoords);
+    FragColor = 0.5 * texture(skybox, TexCoords);
 }
