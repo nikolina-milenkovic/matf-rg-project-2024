@@ -1,4 +1,4 @@
-# {NAME-OF-THE-PROJECT}
+# Riverbed
 
 mi22117 - Nikolina Milenkovic
 The project shows a riverbed with boats and a helicopter following them. 
