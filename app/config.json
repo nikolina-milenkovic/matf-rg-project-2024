@@ -1,11 +1,23 @@
 {
   "resources": {
     "models": {
+      "plane": {
+        "path": "plane/plane.obj",
+        "flip_uvs": true
+      },
+      "boat": {
+        "path": "boat/boat.obj",
+        "flip_uvs": true
+      },
+      "helicopter": {
+        "path": "helicopter/chopper.obj",
+        "flip_uvs": true
+      }
     }
   },
   "window": {
-    "height": 600,
+    "height": 1200,
     "title": "Hello, window!",
-    "width": 800
+    "width": 1600
   }
 }
