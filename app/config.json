@@ -8,6 +8,10 @@
       "boat": {
         "path": "boat/boat.obj",
         "flip_uvs": true
+      },
+      "helicopter": {
+        "path": "helicopter/chopper.obj",
+        "flip_uvs": true
       }
     }
   },

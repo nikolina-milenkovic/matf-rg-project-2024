@@ -18,7 +18,11 @@ class MainController : public engine::core::Controller{
 
     void update_camera();
 
+    void update_spotlight();
+
     void update() override;
+
+    void draw_helicopter();
 
     void draw_boat();
 
@@ -41,6 +45,9 @@ public:
     bool plane_active = false;
     glm::vec3 plane_start = glm::vec3(0.0f, 2.0f, -40.0f);
     glm::vec3 plane_pos = plane_start;
+
+    bool spotlight_active = false;
+    float spotlight_timer = 0.0f;
 
 };
 

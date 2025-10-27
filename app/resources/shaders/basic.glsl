@@ -15,7 +15,7 @@ uniform mat4 projection;
 
 void main() {
     FragPos = vec3(model * vec4(aPos, 1.0));
-    Normal = aNormal;
+    Normal = mat3(transpose(inverse(model))) * aNormal;
     TexCoords = aTexCoords;
     gl_Position = projection * view * vec4(FragPos, 1.0);
 }
@@ -29,6 +29,9 @@ in vec3 Normal;
 in vec3 FragPos;
 
 uniform vec3 dirLightDir;
+uniform vec3 dirLightAmbient;
+uniform vec3 dirLightDiffuse;
+uniform vec3 dirLightSpecular;
 
 struct SpotLight {
     vec3 position;
@@ -54,15 +57,21 @@ uniform sampler2D texture_diffuse1;
 void main(){
     vec3 color = texture(texture_diffuse1, TexCoords).rgb;
     vec3 norm = normalize(Normal);
+    vec3 viewDir = normalize(viewPos - FragPos);
 
     //Direkciono
     vec3 lightDir = normalize(-dirLightDir);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 ambient = 0.2 * color;
-    vec3 diffuse = diff * color;
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+
+    vec3 ambientD = dirLightAmbient * color;
+    vec3 diffuseD = dirLightDiffuse * diff * color;
+    vec3 specularD = dirLightSpecular * spec;
+
+    vec3 result = ambientD + diffuseD + specularD;
 
     //Spotlight
-
     vec3 lightDirSpot = normalize(spotLight.position - FragPos);
     float theta = dot(lightDirSpot, normalize(-spotLight.direction));
 
@@ -78,16 +87,15 @@ void main(){
     float diffS    = max(dot(norm, lightDirSpot), 0.0);
     vec3 diffuseS  = spotLight.diffuse * diffS * color;
 
-    vec3 viewDir  = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDirSpot, norm);
-    float specS = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    vec3 reflectDirS = reflect(-lightDirSpot, norm);
+    float specS = pow(max(dot(viewDir, reflectDirS), 0.0), 32);
     vec3 specularS = spotLight.specular * specS;
 
     ambientS  *= attenuation;
-    diffuseS  *= intensity * attenuation ;
+    diffuseS  *= intensity * attenuation;
     specularS *= intensity * attenuation;
 
-    vec3 result = ambient + diffuse + ambientS + diffuseS + specularS;
+    result += ambientS + diffuseS + specularS;
 
     FragColor = vec4(result, 1.0);
 }

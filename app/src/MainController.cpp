@@ -86,6 +86,26 @@ void MainController::draw_boat() {
     }
 
 }
+void MainController::draw_helicopter() {
+    //Model
+    auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
+    auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
+    engine::resources::Model *helicopter = resources->model("helicopter");
+
+    //Shader
+    engine::resources::Shader *shader = resources->shader("basic");
+
+    shader->use();
+    shader->set_mat4("projection", graphics->projection_matrix());
+    shader->set_mat4("view", graphics->camera()->view_matrix());
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(-6.0f, 0.0f, -15.0f));
+    model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(0.2f));
+    shader->set_mat4("model", model);
+    helicopter->draw(shader);
+
+}
 
 void MainController::draw_skybox() {
     auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
@@ -105,7 +125,6 @@ void MainController::update_camera() {
     auto camera = graphics->camera();
 
     float dt = platform->dt();
-    if (platform->key(engine::platform::KeyId::KEY_LEFT).is_down()) { camera->move_camera(engine::graphics::Camera::Movement::RIGHT, dt); }
     if (platform->key(engine::platform::KeyId::KEY_RIGHT).is_down()) { camera->move_camera(engine::graphics::Camera::Movement::LEFT, dt); }
 }
 void MainController::update_plane() {
@@ -127,10 +146,33 @@ void MainController::update_plane() {
         }
     }
 }
+
+void MainController::update_spotlight() {
+    auto platform = engine::core::Controller::get<engine::platform::PlatformController>();
+    float dt = platform->dt();
+
+    if (platform->key(engine::platform::KeyId::KEY_S).state() == engine::platform::Key::State::JustPressed) {
+        spotlight_active = true;
+        spotlight_timer = 0.0f;
+    }
+
+    if (platform->key(engine::platform::KeyId::KEY_Q).state() == engine::platform::Key::State::JustPressed) {
+        spotlight_active = false;
+    }
+
+    if (spotlight_active) {
+        spotlight_timer += dt;
+    }
+
+}
 void MainController::update() {
     update_plane();
     update_camera();
+    update_spotlight();
 }
+
+
+
 
 void MainController::draw() {
     auto resources = engine::core::Controller::get<engine::resources::ResourcesController>();
@@ -138,27 +180,39 @@ void MainController::draw() {
     shader->use();
 
     shader->set_vec3("dirLightDir",glm::vec3(-2.0f, -7.0f, -2.0f) );
+    shader->set_vec3("dirLightAmbient",  glm::vec3(0.3f, 0.3f, 0.33f));
+    shader->set_vec3("dirLightDiffuse",  glm::vec3(0.6f, 0.6f, 0.7f));
+    shader->set_vec3("dirLightSpecular", glm::vec3(0.5f, 0.5f, 0.6f));
 
-    auto graphics = engine::core::Controller::get<engine::graphics::GraphicsController>();
-    auto camera = graphics->camera();
+    glm::vec3 heliPos = glm::vec3(-6.0f, 0.0f, -15.0f);
+    glm::vec3 boatsCenter = glm::vec3(0.0f, -5.0f, -15.0f);
+    glm::vec3 lightDir = glm::normalize(boatsCenter - heliPos);
 
-    glm::vec3 camPos = camera->Position;
-    glm::vec3 camDir = camera->Front;
-
-    shader->set_vec3("spotLight.position", camPos);
-    shader->set_vec3("spotLight.direction", camDir);
-    shader->set_float("spotLight.cutOff", glm::cos(glm::radians(12.5f)));     // unutrašnji ugao
-    shader->set_float("spotLight.outerCutOff", glm::cos(glm::radians(17.5f))); // spoljašnji prsten
-
-    shader->set_vec3("spotLight.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
-    shader->set_vec3("spotLight.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-    shader->set_vec3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    shader->set_vec3("spotLight.position", heliPos);
+    shader->set_vec3("spotLight.direction", lightDir);
+    shader->set_float("spotLight.cutOff", glm::cos(glm::radians(15.0f)));     // unutrašnji ugao
+    shader->set_float("spotLight.outerCutOff", glm::cos(glm::radians(25.0f))); // spoljašnji prsten
 
     shader->set_float("spotLight.constant", 1.0f);
-    shader->set_float("spotLight.linear", 0.09f);
-    shader->set_float("spotLight.quadratic", 0.332f);
+    shader->set_float("spotLight.linear", 0.05f);
+    shader->set_float("spotLight.quadratic", 0.01f);
+
+    float flicker = (sin(spotlight_timer * 3.0f) * 0.5f + 0.5f);
+
+    if(spotlight_active) {
+        shader->set_vec3("spotLight.ambient", glm::vec3(0.1f * flicker, 0.0f, 0.0f));
+        shader->set_vec3("spotLight.diffuse", glm::vec3(0.8f * flicker, 0.0f, 0.0f));
+        shader->set_vec3("spotLight.specular", glm::vec3(1.0f * flicker, 0.0f, 0.0f));
+
+    }
+    else {
+        shader->set_vec3("spotLight.ambient", glm::vec3(0.0f));
+        shader->set_vec3("spotLight.diffuse", glm::vec3(0.0f));
+        shader->set_vec3("spotLight.specular", glm::vec3(0.0f));
+    }
 
 
+    draw_helicopter();
     draw_boat();
     draw_plane();
     draw_skybox();
